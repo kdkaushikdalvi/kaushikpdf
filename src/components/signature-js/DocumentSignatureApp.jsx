@@ -170,6 +170,9 @@ export function DocumentSignatureApp() {
                 onAddField={addSignatureField}
                 currentPage={currentPage}
                 fieldCount={signatureFields.length}
+                signatureFields={signatureFields}
+                onRemoveField={removeSignatureField}
+                onGoToPage={(pageNum) => setCurrentPage(pageNum)}
               />
             </div>
           </div>
