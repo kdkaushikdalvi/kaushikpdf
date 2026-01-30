@@ -233,9 +233,12 @@ export function PDFViewer({
 
       {/* Draw mode hint */}
       {isDrawMode && (
-        <div className="bg-blue-50 border-b border-blue-200 px-4 py-2 text-center">
-          <span className="text-sm text-blue-700">
-            🖊️ Click and drag on the document to draw a signature field
+        <div className="bg-blue-50 border-b border-blue-200 px-4 py-3 text-center">
+          <span className="text-sm text-blue-700 font-medium">
+            ✏️ Draw rectangles where you want to place signatures.
+          </span>
+          <span className="text-xs text-blue-500 block mt-1">
+            Click and drag to create a signature field
           </span>
         </div>
       )}
@@ -249,7 +252,11 @@ export function PDFViewer({
         <div className="flex justify-center">
           <div 
             ref={pageContainerRef}
-            className={`relative shadow-lg ${isDrawMode ? 'cursor-crosshair' : ''}`}
+            className={`relative shadow-lg transition-all duration-200 ${
+              isDrawMode 
+                ? 'cursor-crosshair ring-2 ring-blue-400 ring-offset-2 hover:ring-blue-500' 
+                : ''
+            }`}
             onMouseDown={handleMouseDown}
             onMouseMove={handleMouseMove}
           >
