@@ -259,7 +259,6 @@ export function SignatureModal({ isOpen, onClose, onSave }) {
           >
             Apply Signature
           </button>
-          </button>
         </div>
       </div>
     </div>
