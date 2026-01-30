@@ -80,18 +80,13 @@ export function PDFViewer({
     });
   }, [pdfDoc, currentPage, scale]);
 
-  const goToPrevPage = () => {
-    const newPage = Math.max(1, currentPage - 1);
-    setCurrentPage(newPage);
-    onPageChange?.(newPage);
-  };
-  
-  const goToNextPage = () => {
-    const newPage = Math.min(numPages, currentPage + 1);
-    setCurrentPage(newPage);
-    onPageChange?.(newPage);
-  };
-  
+  // Notify parent whenever currentPage changes
+  useEffect(() => {
+    onPageChange?.(currentPage);
+  }, [currentPage, onPageChange]);
+
+  const goToPrevPage = () => setCurrentPage(prev => Math.max(1, prev - 1));
+  const goToNextPage = () => setCurrentPage(prev => Math.min(numPages, prev + 1));
   const zoomIn = () => setScale(prev => Math.min(2, prev + 0.25));
   const zoomOut = () => setScale(prev => Math.max(0.5, prev - 0.25));
 
