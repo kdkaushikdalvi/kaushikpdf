@@ -7,23 +7,8 @@ import PdfPage from "./PdfPage";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
 
-// React 18 safety polyfill
-if (!Promise.withResolvers) {
-  Promise.withResolvers = function () {
-    let resolve, reject;
-    const promise = new Promise((res, rej) => {
-      resolve = res;
-      reject = rej;
-    });
-    return { promise, resolve, reject };
-  };
-}
-
-// Configure PDF.js worker
-pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-  "pdfjs-dist/build/pdf.worker.min.mjs",
-  import.meta.url
-).toString();
+// Configure PDF.js worker from CDN
+pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
 export default function PdfViewer() {
   const { pdfFile } = useSignature();
