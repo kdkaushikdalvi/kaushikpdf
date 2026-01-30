@@ -82,6 +82,7 @@ export function PDFViewer({
 
   // Notify parent whenever currentPage changes
   useEffect(() => {
+    console.log('[PDFViewer] Current page changed to:', currentPage);
     onPageChange?.(currentPage);
   }, [currentPage, onPageChange]);
 
