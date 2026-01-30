@@ -2,87 +2,112 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* Document Signature App Design System */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Dancing+Script:wght@700&display=swap');
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Core brand colors - Indigo theme */
+    --background: 220 20% 97%;
+    --foreground: 224 71% 4%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 224 71% 4%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 224 71% 4%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Primary - Indigo */
+    --primary: 239 84% 67%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Secondary - Light indigo/lavender */
+    --secondary: 240 100% 97%;
+    --secondary-foreground: 239 84% 67%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 220 14% 96%;
+    --muted-foreground: 220 9% 46%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 240 100% 97%;
+    --accent-foreground: 239 84% 67%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 239 84% 67%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
 
+    /* Custom tokens for signature app */
+    --step-active: 239 84% 67%;
+    --step-complete: 239 84% 67%;
+    --step-inactive: 220 9% 76%;
+    
+    --field-border: 239 84% 67%;
+    --field-bg: 240 100% 97%;
+    --field-handle: 239 84% 67%;
+    
+    --drop-zone-border: 220 13% 80%;
+    --drop-zone-bg: 220 20% 98%;
+    --drop-zone-active: 239 84% 67%;
+    
+    --signature-pad-bg: 0 0% 100%;
+    
     --sidebar-background: 0 0% 98%;
-
     --sidebar-foreground: 240 5.3% 26.1%;
-
     --sidebar-primary: 240 5.9% 10%;
-
     --sidebar-primary-foreground: 0 0% 98%;
-
     --sidebar-accent: 240 4.8% 95.9%;
-
     --sidebar-accent-foreground: 240 5.9% 10%;
-
     --sidebar-border: 220 13% 91%;
-
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --background: 224 71% 4%;
+    --foreground: 210 20% 98%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 224 71% 8%;
+    --card-foreground: 210 20% 98%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 224 71% 8%;
+    --popover-foreground: 210 20% 98%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 239 84% 67%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 240 50% 15%;
+    --secondary-foreground: 239 84% 80%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 224 71% 12%;
+    --muted-foreground: 220 9% 65%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 240 50% 15%;
+    --accent-foreground: 239 84% 80%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 62% 30%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --border: 224 71% 15%;
+    --input: 224 71% 15%;
+    --ring: 239 84% 67%;
+
+    --step-active: 239 84% 67%;
+    --step-complete: 239 84% 67%;
+    --step-inactive: 220 9% 40%;
+    
+    --field-border: 239 84% 67%;
+    --field-bg: 240 50% 15%;
+    --field-handle: 239 84% 67%;
+    
+    --drop-zone-border: 224 71% 20%;
+    --drop-zone-bg: 224 71% 6%;
+    --drop-zone-active: 239 84% 67%;
+    
+    --signature-pad-bg: 224 71% 10%;
+    
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -100,6 +125,123 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+}
+
+@layer components {
+  /* Signature font style */
+  .signature-font {
+    font-family: 'Dancing Script', cursive;
+  }
+
+  /* Step indicator animations */
+  .step-pulse {
+    animation: step-pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes step-pulse {
+    0%, 100% {
+      box-shadow: 0 0 0 0 hsl(var(--primary) / 0.4);
+    }
+    50% {
+      box-shadow: 0 0 0 8px hsl(var(--primary) / 0);
+    }
+  }
+
+  /* Signature field styles */
+  .signature-field {
+    @apply border-2 border-dashed rounded-lg cursor-move transition-all duration-200;
+    border-color: hsl(var(--field-border));
+    background-color: hsl(var(--field-bg));
+  }
+
+  .signature-field:hover {
+    @apply shadow-lg;
+    box-shadow: 0 4px 20px hsl(var(--primary) / 0.15);
+  }
+
+  .signature-field.active {
+    @apply border-solid shadow-xl;
+    box-shadow: 0 8px 30px hsl(var(--primary) / 0.25);
+  }
+
+  /* Drop zone styles */
+  .drop-zone {
+    @apply border-2 border-dashed rounded-xl transition-all duration-300;
+    border-color: hsl(var(--drop-zone-border));
+    background-color: hsl(var(--drop-zone-bg));
+  }
+
+  .drop-zone.active {
+    border-color: hsl(var(--drop-zone-active));
+    background-color: hsl(var(--primary) / 0.05);
+    @apply scale-[1.01];
+  }
+
+  /* PDF page shadow */
+  .pdf-page-shadow {
+    box-shadow: 
+      0 1px 3px rgba(0, 0, 0, 0.08),
+      0 4px 14px rgba(0, 0, 0, 0.06),
+      0 10px 40px rgba(0, 0, 0, 0.04);
+  }
+
+  /* Signature canvas container */
+  .signature-canvas-container {
+    @apply rounded-xl overflow-hidden;
+    background-color: hsl(var(--signature-pad-bg));
+    box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.05);
+  }
+
+  /* Smooth card hover */
+  .card-hover {
+    @apply transition-all duration-300;
+  }
+
+  .card-hover:hover {
+    @apply -translate-y-1;
+    box-shadow: 0 12px 40px -12px hsl(var(--primary) / 0.2);
+  }
+
+  /* Option card for sign now / send email */
+  .option-card {
+    @apply border-2 rounded-xl p-6 cursor-pointer transition-all duration-200;
+    border-color: hsl(var(--border));
+  }
+
+  .option-card:hover {
+    border-color: hsl(var(--primary) / 0.5);
+  }
+
+  .option-card.selected {
+    border-color: hsl(var(--primary));
+    background-color: hsl(var(--primary) / 0.03);
+  }
+}
+
+@layer utilities {
+  /* Scrollbar styling */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--muted-foreground) / 0.3) transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: hsl(var(--muted-foreground) / 0.3);
+    border-radius: 3px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background-color: hsl(var(--muted-foreground) / 0.5);
   }
 }
