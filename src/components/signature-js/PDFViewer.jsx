@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import * as pdfjsLib from 'pdfjs-dist';
-import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut, PenTool } from 'lucide-react';
 import { SignatureFieldOverlay } from './SignatureFieldOverlay';
 
 // Configure PDF.js worker with specific version
@@ -10,6 +10,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = PDF_WORKER_URL;
 /**
  * PDF Viewer using pdfjs-dist directly
  * Renders PDF to canvas and overlays signature fields
+ * Supports draw-to-place mode for creating signature fields
  */
 export function PDFViewer({
   document,
@@ -21,6 +22,7 @@ export function PDFViewer({
   onFieldSelect,
   onFieldClick,
   onPageChange,
+  onAddField,
   isEditable = true,
 }) {
   const [numPages, setNumPages] = useState(0);
@@ -29,8 +31,13 @@ export function PDFViewer({
   const [pageSize, setPageSize] = useState({ width: 0, height: 0 });
   const [loading, setLoading] = useState(true);
   const [pdfDoc, setPdfDoc] = useState(null);
+  const [isDrawMode, setIsDrawMode] = useState(false);
+  const [isDrawing, setIsDrawing] = useState(false);
+  const [drawStart, setDrawStart] = useState(null);
+  const [drawRect, setDrawRect] = useState(null);
   const canvasRef = useRef(null);
   const containerRef = useRef(null);
+  const pageContainerRef = useRef(null);
 
   // Load PDF document
   useEffect(() => {
@@ -94,6 +101,73 @@ export function PDFViewer({
   // Get fields for current page
   const currentPageFields = signatureFields.filter(f => f.pageNumber === currentPage);
 
+  // Drawing handlers
+  const handleMouseDown = useCallback((e) => {
+    if (!isDrawMode || !isEditable || !pageContainerRef.current) return;
+    
+    const rect = pageContainerRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    setIsDrawing(true);
+    setDrawStart({ x, y });
+    setDrawRect({ x, y, width: 0, height: 0 });
+  }, [isDrawMode, isEditable]);
+
+  const handleMouseMove = useCallback((e) => {
+    if (!isDrawing || !drawStart || !pageContainerRef.current) return;
+    
+    const rect = pageContainerRef.current.getBoundingClientRect();
+    const currentX = Math.max(0, Math.min(e.clientX - rect.left, pageSize.width));
+    const currentY = Math.max(0, Math.min(e.clientY - rect.top, pageSize.height));
+    
+    const x = Math.min(drawStart.x, currentX);
+    const y = Math.min(drawStart.y, currentY);
+    const width = Math.abs(currentX - drawStart.x);
+    const height = Math.abs(currentY - drawStart.y);
+    
+    setDrawRect({ x, y, width, height });
+  }, [isDrawing, drawStart, pageSize]);
+
+  const handleMouseUp = useCallback(() => {
+    if (!isDrawing || !drawRect || !onAddField) {
+      setIsDrawing(false);
+      setDrawStart(null);
+      setDrawRect(null);
+      return;
+    }
+    
+    // Minimum size check (at least 50x30 pixels)
+    if (drawRect.width >= 50 && drawRect.height >= 30) {
+      // Convert to percentage-based coordinates
+      // Calculate center position in percentages
+      const centerX = ((drawRect.x + drawRect.width / 2) / pageSize.width) * 100;
+      const centerY = ((drawRect.y + drawRect.height / 2) / pageSize.height) * 100;
+      const widthPercent = (drawRect.width / pageSize.width) * 100;
+      const heightPercent = (drawRect.height / pageSize.height) * 100;
+      
+      onAddField(currentPage, {
+        x: centerX,
+        y: centerY,
+        width: widthPercent,
+        height: heightPercent,
+      });
+    }
+    
+    setIsDrawing(false);
+    setDrawStart(null);
+    setDrawRect(null);
+    setIsDrawMode(false);
+  }, [isDrawing, drawRect, onAddField, pageSize, currentPage]);
+
+  // Global mouse up listener
+  useEffect(() => {
+    if (isDrawing) {
+      window.addEventListener('mouseup', handleMouseUp);
+      return () => window.removeEventListener('mouseup', handleMouseUp);
+    }
+  }, [isDrawing, handleMouseUp]);
+
   return (
     <div className="flex flex-col h-full">
       {/* Toolbar */}
@@ -119,6 +193,24 @@ export function PDFViewer({
         </div>
 
         <div className="flex items-center gap-2">
+          {/* Draw mode toggle */}
+          {isEditable && onAddField && (
+            <button
+              onClick={() => setIsDrawMode(!isDrawMode)}
+              className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors ${
+                isDrawMode 
+                  ? 'bg-blue-600 text-white' 
+                  : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+              }`}
+              title="Draw signature field"
+            >
+              <PenTool className="w-4 h-4" />
+              <span className="text-sm font-medium">Draw Field</span>
+            </button>
+          )}
+          
+          <div className="w-px h-6 bg-gray-200 mx-2" />
+          
           <button
             onClick={zoomOut}
             disabled={scale <= 0.5}
@@ -139,20 +231,47 @@ export function PDFViewer({
         </div>
       </div>
 
+      {/* Draw mode hint */}
+      {isDrawMode && (
+        <div className="bg-blue-50 border-b border-blue-200 px-4 py-2 text-center">
+          <span className="text-sm text-blue-700">
+            🖊️ Click and drag on the document to draw a signature field
+          </span>
+        </div>
+      )}
+
       {/* PDF Content */}
       <div
         ref={containerRef}
         className="flex-1 overflow-auto bg-gray-100 p-6"
-        onClick={() => onFieldSelect(null)}
+        onClick={() => !isDrawMode && onFieldSelect(null)}
       >
         <div className="flex justify-center">
-          <div className="relative shadow-lg">
+          <div 
+            ref={pageContainerRef}
+            className={`relative shadow-lg ${isDrawMode ? 'cursor-crosshair' : ''}`}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+          >
             {loading ? (
               <div className="flex items-center justify-center w-[600px] h-[800px] bg-white">
                 <div className="text-gray-500">Loading PDF...</div>
               </div>
             ) : (
               <canvas ref={canvasRef} className="bg-white" />
+            )}
+
+            {/* Drawing rectangle preview */}
+            {isDrawing && drawRect && (
+              <div
+                className="absolute border-2 border-blue-500 bg-blue-100/30 pointer-events-none"
+                style={{
+                  left: drawRect.x,
+                  top: drawRect.y,
+                  width: drawRect.width,
+                  height: drawRect.height,
+                }}
+              />
             )}
 
             {/* Signature Fields Overlay */}
@@ -163,7 +282,7 @@ export function PDFViewer({
                 pageSize={pageSize}
                 scale={scale}
                 isActive={field.id === activeFieldId}
-                isEditable={isEditable}
+                isEditable={isEditable && !isDrawMode}
                 onUpdate={(updates) => onFieldUpdate(field.id, updates)}
                 onRemove={() => onFieldRemove(field.id)}
                 onSelect={() => onFieldSelect(field.id)}

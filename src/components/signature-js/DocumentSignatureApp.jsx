@@ -162,6 +162,7 @@ export function DocumentSignatureApp() {
                 onFieldRemove={removeSignatureField}
                 onFieldSelect={setActiveFieldId}
                 onPageChange={setCurrentPage}
+                onAddField={addSignatureField}
                 isEditable={true}
               />
             </div>
