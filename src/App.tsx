@@ -17,9 +17,9 @@ const App = () => (
       <Sonner />
       <SignatureProvider>
         <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/v2" element={<SignatureV2 />} />
+        <Routes>
+            <Route path="/" element={<SignatureV2 />} />
+            <Route path="/v1" element={<Index />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
