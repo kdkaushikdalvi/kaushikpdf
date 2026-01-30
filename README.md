@@ -1,73 +1,193 @@
-# Welcome to your Lovable project
+# SignDoc - Document Signature App
 
-## Project info
+A step-based PDF signature tool with a wizard flow: Upload → Add Fields → Submission Options → Sign → Download.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## Tech Stack
 
-## How can I edit this code?
+- **Frontend**: React 18, Vite, TypeScript, Tailwind CSS
+- **PDF Rendering**: pdfjs-dist v2.16.105
+- **PDF Export**: pdf-lib
+- **Backend**: Lovable Cloud (PostgreSQL, Storage, Auth)
 
-There are several ways of editing your application.
+---
 
-**Use Lovable**
+## Database Schema
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+### Enums
 
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+```sql
+CREATE TYPE document_status AS ENUM ('draft', 'pending', 'completed', 'expired');
+CREATE TYPE submission_type AS ENUM ('sign-now', 'send-email');
+CREATE TYPE signature_type AS ENUM ('draw', 'type', 'upload');
 ```
 
-**Edit a file directly in GitHub**
+### Documents Table
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+| Column | Type | Description |
+|--------|------|-------------|
+| `id` | UUID | Primary key |
+| `user_id` | UUID | Owner (references auth.users) |
+| `name` | TEXT | Original filename |
+| `file_url` | TEXT | URL to PDF in storage |
+| `num_pages` | INTEGER | Total pages in PDF |
+| `status` | document_status | draft, pending, completed, expired |
+| `submission_type` | submission_type | sign-now or send-email |
+| `recipient_email` | TEXT | Email recipient (nullable) |
+| `created_at` | TIMESTAMPTZ | Creation timestamp |
+| `updated_at` | TIMESTAMPTZ | Last modified |
+| `signed_at` | TIMESTAMPTZ | Completion timestamp |
+| `signed_file_url` | TEXT | URL to signed PDF |
 
-**Use GitHub Codespaces**
+### Signature Fields Table
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+| Column | Type | Description |
+|--------|------|-------------|
+| `id` | UUID | Primary key |
+| `document_id` | UUID | References documents.id |
+| `signer_id` | UUID | Who should sign (nullable) |
+| `page_number` | INTEGER | Page number (1-indexed) |
+| `x` | DECIMAL(5,2) | X position (0-100%) |
+| `y` | DECIMAL(5,2) | Y position (0-100%) |
+| `width` | DECIMAL(5,2) | Width (0-100%) |
+| `height` | DECIMAL(5,2) | Height (0-100%) |
+| `is_signed` | BOOLEAN | Signature applied? |
+| `signature_type` | signature_type | draw, type, or upload |
+| `signature_url` | TEXT | URL to signature image |
+| `signed_at` | TIMESTAMPTZ | When signed |
+| `created_at` | TIMESTAMPTZ | When field was added |
 
-## What technologies are used for this project?
+### Storage Buckets
 
-This project is built with:
+| Bucket | Purpose | Public |
+|--------|---------|--------|
+| `documents` | Original PDFs | No |
+| `signed-documents` | Completed signed PDFs | No |
+| `signatures` | Signature images | No |
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+---
 
-## How can I deploy this project?
+## JSON Structures
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+### Document Object
 
-## Can I connect a custom domain to my Lovable project?
+```json
+{
+  "id": "uuid",
+  "user_id": "uuid",
+  "name": "contract.pdf",
+  "file_url": "https://storage.../documents/user_id/file.pdf",
+  "num_pages": 5,
+  "status": "pending",
+  "submission_type": "sign-now",
+  "recipient_email": null,
+  "created_at": "2025-01-30T06:30:00Z",
+  "updated_at": "2025-01-30T06:35:00Z",
+  "signed_at": null,
+  "signed_file_url": null
+}
+```
 
-Yes, you can!
+### Signature Field Object
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+```json
+{
+  "id": "uuid",
+  "document_id": "uuid",
+  "signer_id": null,
+  "page_number": 2,
+  "x": 50.5,
+  "y": 75.2,
+  "width": 25.0,
+  "height": 10.0,
+  "is_signed": true,
+  "signature_type": "draw",
+  "signature_url": "https://storage.../signatures/user_id/sig.png",
+  "signed_at": "2025-01-30T06:40:00Z",
+  "created_at": "2025-01-30T06:31:00Z"
+}
+```
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+---
+
+## TypeScript Types
+
+```typescript
+interface Document {
+  id: string;
+  user_id: string;
+  name: string;
+  file_url: string;
+  num_pages: number;
+  status: 'draft' | 'pending' | 'completed' | 'expired';
+  submission_type: 'sign-now' | 'send-email';
+  recipient_email: string | null;
+  created_at: string;
+  updated_at: string;
+  signed_at: string | null;
+  signed_file_url: string | null;
+}
+
+interface SignatureField {
+  id: string;
+  document_id: string;
+  signer_id: string | null;
+  page_number: number;
+  x: number;  // 0-100 percentage
+  y: number;  // 0-100 percentage
+  width: number;
+  height: number;
+  is_signed: boolean;
+  signature_type: 'draw' | 'type' | 'upload' | null;
+  signature_url: string | null;
+  signed_at: string | null;
+  created_at: string;
+}
+```
+
+---
+
+## Important Notes
+
+### Percentage-Based Positioning
+
+All field positions (`x`, `y`, `width`, `height`) are stored as percentages (0-100):
+- Ensures consistent placement regardless of zoom or screen size
+- To convert: `pixelX = (percentX / 100) * pageWidth`
+
+### File Storage
+
+⚠️ **Never store file data in the database!**
+- Store files in blob storage (Lovable Cloud Storage)
+- Only store URL references in database columns
+
+### Signature Methods
+
+Users can sign using three methods:
+1. **Draw** - Canvas drawing with stylus/mouse
+2. **Type** - Typed name rendered in Dancing Script font
+3. **Upload** - Upload PNG/JPG signature image
+
+---
+
+## Development
+
+```sh
+# Install dependencies
+npm install
+
+# Start dev server
+npm run dev
+
+# Build for production
+npm run build
+```
+
+## Deployment
+
+Open [Lovable](https://lovable.dev) and click Share → Publish.
+
+## Custom Domain
+
+Navigate to Project → Settings → Domains → Connect Domain.
+
+Read more: [Custom Domain Setup](https://docs.lovable.dev/features/custom-domain#custom-domain)
