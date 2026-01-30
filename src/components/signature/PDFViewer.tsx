@@ -18,6 +18,7 @@ interface PDFViewerProps {
   onFieldRemove: (fieldId: string) => void;
   onFieldSelect: (fieldId: string | null) => void;
   onFieldClick?: (fieldId: string) => void;
+  onPageChange?: (page: number) => void;
   isEditable?: boolean;
 }
 
@@ -30,6 +31,7 @@ export function PDFViewer({
   onFieldRemove,
   onFieldSelect,
   onFieldClick,
+  onPageChange,
   isEditable = true,
 }: PDFViewerProps) {
   const [numPages, setNumPages] = useState(0);
@@ -91,6 +93,11 @@ export function PDFViewer({
       page.render(renderContext);
     });
   }, [pdfDoc, currentPage, scale]);
+
+  // Notify parent whenever currentPage changes
+  useEffect(() => {
+    onPageChange?.(currentPage);
+  }, [currentPage, onPageChange]);
 
   const goToPrevPage = () => setCurrentPage(prev => Math.max(1, prev - 1));
   const goToNextPage = () => setCurrentPage(prev => Math.min(numPages, prev + 1));
