@@ -78,14 +78,15 @@ export function useSignatureDocument() {
   }, []);
 
   // Signature field handlers - positions stored as percentages
-  const addSignatureField = useCallback((pageNumber) => {
+  // customPosition can include { x, y, width, height } for draw-to-place
+  const addSignatureField = useCallback((pageNumber, customPosition = null) => {
     const newField = {
       id: `sig-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       pageNumber,
-      x: 50, // Center of page (percentage)
-      y: 50,
-      width: 25,
-      height: 10,
+      x: customPosition?.x ?? 50, // Center of page (percentage)
+      y: customPosition?.y ?? 50,
+      width: customPosition?.width ?? 25,
+      height: customPosition?.height ?? 10,
       isSigned: false,
     };
     setSignatureFields(prev => [...prev, newField]);
