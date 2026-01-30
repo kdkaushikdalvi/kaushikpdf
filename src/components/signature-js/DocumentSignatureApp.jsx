@@ -46,6 +46,9 @@ export function DocumentSignatureApp() {
   const [isExporting, setIsExporting] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
 
+  // Debug: Log when currentPage changes
+  console.log('[DocumentSignatureApp] currentPage state:', currentPage);
+
   // Handle field click during sign step
   const handleFieldClick = (fieldId) => {
     const field = signatureFields.find(f => f.id === fieldId);

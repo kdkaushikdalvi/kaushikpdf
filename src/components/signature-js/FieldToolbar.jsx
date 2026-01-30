@@ -5,6 +5,7 @@ import { Plus, FileSignature } from 'lucide-react';
  * Toolbar for adding signature fields to the document
  */
 export function FieldToolbar({ onAddField, currentPage, fieldCount }) {
+  console.log('[FieldToolbar] Rendering with currentPage:', currentPage);
   return (
     <div className="bg-white border border-gray-200 rounded-xl p-4">
       <div className="flex items-center justify-between mb-4">
