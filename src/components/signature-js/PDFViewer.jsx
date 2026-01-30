@@ -3,8 +3,9 @@ import * as pdfjsLib from 'pdfjs-dist';
 import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut } from 'lucide-react';
 import { SignatureFieldOverlay } from './SignatureFieldOverlay';
 
-// Configure PDF.js worker from unpkg CDN
-pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://unpkg.com/pdfjs-dist/build/pdf.worker.min.js';
+// Configure PDF.js worker with specific version
+export const PDF_WORKER_URL = "https://unpkg.com/pdfjs-dist@2.16.105/build/pdf.worker.min.js";
+pdfjsLib.GlobalWorkerOptions.workerSrc = PDF_WORKER_URL;
 
 /**
  * PDF Viewer using pdfjs-dist directly
