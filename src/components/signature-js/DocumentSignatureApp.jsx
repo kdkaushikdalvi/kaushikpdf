@@ -44,6 +44,7 @@ export function DocumentSignatureApp() {
   const [showSignatureModal, setShowSignatureModal] = useState(false);
   const [signingFieldId, setSigningFieldId] = useState(null);
   const [isExporting, setIsExporting] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
 
   // Handle field click during sign step
   const handleFieldClick = (fieldId) => {
@@ -86,9 +87,6 @@ export function DocumentSignatureApp() {
   const handleSendToRecipient = () => {
     toast.info('Send to recipient feature requires backend integration');
   };
-
-  // Get current page for field toolbar
-  const currentPage = 1; // You can track this from PDFViewer if needed
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -160,6 +158,7 @@ export function DocumentSignatureApp() {
                 onFieldUpdate={updateSignatureField}
                 onFieldRemove={removeSignatureField}
                 onFieldSelect={setActiveFieldId}
+                onPageChange={setCurrentPage}
                 isEditable={true}
               />
             </div>

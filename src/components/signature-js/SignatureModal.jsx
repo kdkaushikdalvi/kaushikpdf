@@ -159,6 +159,7 @@ export function SignatureModal({ isOpen, onClose, onSave }) {
                   }}
                   backgroundColor="transparent"
                   penColor="black"
+                  onBegin={() => setHasDrawing(true)}
                   onEnd={() => setHasDrawing(true)}
                 />
               </div>
