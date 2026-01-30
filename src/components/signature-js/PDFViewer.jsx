@@ -3,8 +3,8 @@ import * as pdfjsLib from 'pdfjs-dist';
 import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut } from 'lucide-react';
 import { SignatureFieldOverlay } from './SignatureFieldOverlay';
 
-// Configure PDF.js worker for version 2.16.105
-pdfjsLib.GlobalWorkerOptions.workerSrc = '//cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+// Configure PDF.js worker - uses local file from public folder
+pdfjsLib.GlobalWorkerOptions.workerSrc = `${window.location.origin}/pdf.worker.min.mjs`;
 
 /**
  * PDF Viewer using pdfjs-dist directly
