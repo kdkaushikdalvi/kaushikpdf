@@ -6,8 +6,8 @@ import { cn } from '@/lib/utils';
 import type { PDFDocument, SignatureField } from '@/types/signature';
 import { SignatureFieldOverlay } from './SignatureFieldOverlay';
 
-// Configure PDF.js worker
-pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+// Configure PDF.js worker - use cdnjs for proper CORS support
+pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.mjs`;
 
 interface PDFViewerProps {
   document: PDFDocument;
