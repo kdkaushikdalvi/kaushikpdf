@@ -14,7 +14,107 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      documents: {
+        Row: {
+          created_at: string
+          file_url: string
+          id: string
+          name: string
+          num_pages: number
+          recipient_email: string | null
+          signed_at: string | null
+          signed_file_url: string | null
+          status: Database["public"]["Enums"]["document_status"]
+          submission_type: Database["public"]["Enums"]["submission_type"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          file_url: string
+          id?: string
+          name: string
+          num_pages?: number
+          recipient_email?: string | null
+          signed_at?: string | null
+          signed_file_url?: string | null
+          status?: Database["public"]["Enums"]["document_status"]
+          submission_type?: Database["public"]["Enums"]["submission_type"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          file_url?: string
+          id?: string
+          name?: string
+          num_pages?: number
+          recipient_email?: string | null
+          signed_at?: string | null
+          signed_file_url?: string | null
+          status?: Database["public"]["Enums"]["document_status"]
+          submission_type?: Database["public"]["Enums"]["submission_type"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      signature_fields: {
+        Row: {
+          created_at: string
+          document_id: string
+          height: number
+          id: string
+          is_signed: boolean
+          page_number: number
+          signature_type: Database["public"]["Enums"]["signature_type"] | null
+          signature_url: string | null
+          signed_at: string | null
+          signer_id: string | null
+          width: number
+          x: number
+          y: number
+        }
+        Insert: {
+          created_at?: string
+          document_id: string
+          height?: number
+          id?: string
+          is_signed?: boolean
+          page_number?: number
+          signature_type?: Database["public"]["Enums"]["signature_type"] | null
+          signature_url?: string | null
+          signed_at?: string | null
+          signer_id?: string | null
+          width?: number
+          x?: number
+          y?: number
+        }
+        Update: {
+          created_at?: string
+          document_id?: string
+          height?: number
+          id?: string
+          is_signed?: boolean
+          page_number?: number
+          signature_type?: Database["public"]["Enums"]["signature_type"] | null
+          signature_url?: string | null
+          signed_at?: string | null
+          signer_id?: string | null
+          width?: number
+          x?: number
+          y?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "signature_fields_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +123,9 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      document_status: "draft" | "pending" | "completed" | "expired"
+      signature_type: "draw" | "type" | "upload"
+      submission_type: "sign-now" | "send-email"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +252,10 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      document_status: ["draft", "pending", "completed", "expired"],
+      signature_type: ["draw", "type", "upload"],
+      submission_type: ["sign-now", "send-email"],
+    },
   },
 } as const
