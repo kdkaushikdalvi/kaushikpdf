@@ -10,6 +10,7 @@ export function SignatureModal({ isOpen, onClose, onSave }) {
   const [activeTab, setActiveTab] = useState('draw');
   const [typedName, setTypedName] = useState('');
   const [uploadedImage, setUploadedImage] = useState(null);
+  const [hasDrawing, setHasDrawing] = useState(false);
   const sigCanvasRef = useRef(null);
   const typedCanvasRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -19,11 +20,26 @@ export function SignatureModal({ isOpen, onClose, onSave }) {
     if (isOpen) {
       setTypedName('');
       setUploadedImage(null);
+      setHasDrawing(false);
       if (sigCanvasRef.current) {
         sigCanvasRef.current.clear();
       }
     }
   }, [isOpen]);
+
+  // Check if Apply button should be enabled
+  const canApply = () => {
+    switch (activeTab) {
+      case 'draw':
+        return hasDrawing;
+      case 'type':
+        return typedName.trim().length > 0;
+      case 'upload':
+        return uploadedImage !== null;
+      default:
+        return false;
+    }
+  };
 
   // Convert typed name to signature image using canvas
   const renderTypedSignature = useCallback(() => {
@@ -83,6 +99,7 @@ export function SignatureModal({ isOpen, onClose, onSave }) {
   const clearDrawing = () => {
     if (sigCanvasRef.current) {
       sigCanvasRef.current.clear();
+      setHasDrawing(false);
     }
   };
 
@@ -142,6 +159,7 @@ export function SignatureModal({ isOpen, onClose, onSave }) {
                   }}
                   backgroundColor="transparent"
                   penColor="black"
+                  onEnd={() => setHasDrawing(true)}
                 />
               </div>
               <button
@@ -232,9 +250,15 @@ export function SignatureModal({ isOpen, onClose, onSave }) {
           </button>
           <button
             onClick={handleSave}
-            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg"
+            disabled={!canApply()}
+            className={`px-4 py-2 text-sm font-medium rounded-lg ${
+              canApply()
+                ? 'text-white bg-blue-600 hover:bg-blue-700'
+                : 'text-gray-400 bg-gray-200 cursor-not-allowed'
+            }`}
           >
             Apply Signature
+          </button>
           </button>
         </div>
       </div>
