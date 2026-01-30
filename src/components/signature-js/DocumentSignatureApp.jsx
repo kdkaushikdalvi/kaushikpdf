@@ -151,7 +151,16 @@ export function DocumentSignatureApp() {
 
         {/* Fields Step */}
         {currentStep === 'fields' && document && (
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          <div className="space-y-6">
+            <div className="text-center">
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                Place Signature Fields
+              </h2>
+              <p className="text-gray-500">
+                Draw rectangles where you want to place signatures.
+              </p>
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
             <div className="lg:col-span-3 bg-white rounded-xl border border-gray-200 overflow-hidden h-[600px]">
               <PDFViewer
                 document={document}
@@ -175,6 +184,7 @@ export function DocumentSignatureApp() {
                 onRemoveField={removeSignatureField}
                 onGoToPage={(pageNum) => setCurrentPage(pageNum)}
               />
+            </div>
             </div>
           </div>
         )}
